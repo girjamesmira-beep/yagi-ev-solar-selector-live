@@ -320,9 +320,8 @@
     els.packageGrid.innerHTML = packages.map((pkg, index) => packageMarkup(pkg, index === 1)).join("");
 
     lastSummary = buildSummary(input, calc, packages);
-    const subject = encodeURIComponent("EV solar charging assessment request");
-    const body = encodeURIComponent(`Hello Yagi GreenVision Ethiopia,\n\nPlease review this indicative EV solar sizing:\n\n${lastSummary}\n\nCustomer name:\nLocation:\nPhone / WhatsApp:\n`);
-    els.quoteLink.href = `mailto:info@yagi-green.com?subject=${subject}&body=${body}`;
+    const quoteMessage = encodeURIComponent(`EV solar selector result:\n\n${lastSummary}`);
+    els.quoteLink.href = `quotation.html?solution=ev&message=${quoteMessage}`;
   }
 
   function setGridSupport(value) {
