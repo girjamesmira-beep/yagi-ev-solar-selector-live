@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Request a solar, battery or EV charging quotation from Yagi GreenVision Ethiopia.">
+  <meta name="theme-color" content="#0b3d2b">
+  <title>Request a Quote | Yagi GreenVision Ethiopia</title>
+  <style>
+    :root {
+      --ink:#10231b; --muted:#607068; --green-950:#072b1e; --green-900:#0b3d2b;
+      --green-800:#11563d; --green-700:#19704d; --green-500:#3aa66f;
+      --green-200:#bfe6d0; --green-100:#ddf2e5; --green-50:#f0f9f3;
+      --sun:#f4b740; --paper:#fff; --canvas:#f5f7f6; --line:#dce5e0;
+      --danger:#9b2c2c; --shadow:0 18px 55px rgba(7,43,30,.1);
+      --radius-xl:28px; --radius-lg:20px; --radius-md:14px; --max:1160px;
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      margin:0; min-width:320px; color:var(--ink); background:var(--canvas);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+    button,input,select,textarea { font:inherit; }
+    a { color:inherit; }
+    :focus-visible { outline:3px solid rgba(58,166,111,.35); outline-offset:3px; }
+    .site-header {
+      min-height:72px; padding:12px max(24px,calc((100vw - var(--max))/2));
+      display:flex; align-items:center; justify-content:space-between; gap:20px;
+      background:rgba(245,247,246,.94); backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(11,61,43,.08); position:sticky; top:0; z-index:20;
+    }
+    .wordmark { display:flex; align-items:baseline; gap:8px; text-decoration:none; letter-spacing:-.02em; }
+    .wordmark-y { color:var(--green-900); font-size:1.2rem; font-weight:900; letter-spacing:.08em; }
+    .wordmark-rest { color:var(--green-700); font-size:.92rem; font-weight:650; }
+    .nav-links { display:flex; align-items:center; gap:10px; }
+    .nav-links a {
+      text-decoration:none; color:var(--green-800); font-size:.82rem; font-weight:750;
+      padding:9px 12px; border-radius:999px;
+    }
+    .nav-links a:first-child { background:var(--green-100); border:1px solid var(--green-200); }
+    .hero {
+      padding:64px max(24px,calc((100vw - var(--max))/2)) 84px;
+      background:
+        radial-gradient(circle at 92% 2%,rgba(244,183,64,.2),transparent 27%),
+        radial-gradient(circle at 6% 18%,rgba(58,166,111,.16),transparent 25%),
+        linear-gradient(180deg,#f8fbf9 0%,var(--canvas) 100%);
+    }
+    .hero-copy { max-width:790px; margin:0 auto 38px; text-align:center; }
+    .eyebrow,.section-label {
+      margin:0 0 10px; color:var(--green-700); font-size:.74rem; line-height:1.2;
+      font-weight:850; letter-spacing:.12em; text-transform:uppercase;
+    }
+    h1 { margin:0; color:var(--green-950); font-size:clamp(2.45rem,6vw,4.7rem); line-height:1; letter-spacing:-.06em; }
+    .hero-copy > p:last-child { max-width:670px; margin:22px auto 0; color:var(--muted); font-size:1.08rem; line-height:1.65; }
+    .quote-layout {
+      max-width:var(--max); margin:0 auto; display:grid; grid-template-columns:minmax(250px,.7fr) minmax(0,1.3fr);
+      gap:22px; align-items:start;
+    }
+    .side-card,.form-card {
+      background:var(--paper); border:1px solid rgba(11,61,43,.1);
+      border-radius:var(--radius-xl); box-shadow:var(--shadow);
+    }
+    .side-card { padding:30px; position:sticky; top:94px; }
+    .side-card h2 { margin:0 0 12px; color:var(--green-950); font-size:1.5rem; letter-spacing:-.035em; }
+    .side-card > p { margin:0; color:var(--muted); line-height:1.65; }
+    .steps { display:grid; gap:18px; margin:28px 0; }
+    .step { display:grid; grid-template-columns:34px 1fr; gap:12px; align-items:start; }
+    .step-number {
+      width:34px; height:34px; display:grid; place-items:center; border-radius:50%;
+      background:var(--green-100); color:var(--green-800); font-weight:900;
+    }
+    .step strong { display:block; margin:2px 0 4px; font-size:.92rem; }
+    .step span { color:var(--muted); font-size:.8rem; line-height:1.45; }
+    .trust-list { padding-top:22px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px; }
+    .trust-list span {
+      color:var(--green-800); background:var(--green-50); border:1px solid var(--green-200);
+      padding:7px 9px; border-radius:999px; font-size:.72rem; font-weight:750;
+    }
+    .form-card { padding:clamp(24px,4vw,44px); }
+    .form-heading { display:flex; align-items:start; justify-content:space-between; gap:18px; margin-bottom:10px; }
+    .form-heading h2 { margin:0; font-size:1.8rem; letter-spacing:-.04em; }
+    .required-note { color:var(--muted); font-size:.75rem; white-space:nowrap; }
+    .quote-section { padding:28px 0; border-top:1px solid var(--line); }
+    .quote-section:first-of-type { border-top:0; padding-top:18px; }
+    .quote-section h3 { margin:0 0 6px; color:var(--green-950); font-size:1.05rem; }
+    .section-help { margin:0 0 20px; color:var(--muted); font-size:.82rem; line-height:1.5; }
+    .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .field { display:grid; gap:8px; min-width:0; margin-bottom:16px; }
+    .field:last-child { margin-bottom:0; }
+    .field-label { color:#33483f; font-size:.82rem; font-weight:760; }
+    .optional { color:var(--muted); font-weight:500; }
+    input:not([type="checkbox"]),select,textarea {
+      width:100%; color:var(--ink); background:#fbfdfc; border:1px solid #ccd9d2;
+      border-radius:12px; padding:13px 14px; transition:border-color .18s,box-shadow .18s,background .18s;
+    }
+    input:not([type="checkbox"]),select { min-height:50px; }
+    textarea { min-height:122px; resize:vertical; line-height:1.5; }
+    input:hover,select:hover,textarea:hover { border-color:#9cb8a9; }
+    input:focus,select:focus,textarea:focus {
+      outline:0; border-color:var(--green-500); box-shadow:0 0 0 4px rgba(58,166,111,.12); background:#fff;
+    }
+    .choice-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .choice {
+      position:relative; display:flex; align-items:center; min-height:54px; padding:11px 12px;
+      border:1px solid #ccd9d2; border-radius:12px; background:#fbfdfc; cursor:pointer;
+    }
+    .choice:has(input:checked) { border-color:var(--green-500); background:var(--green-50); box-shadow:0 0 0 3px rgba(58,166,111,.1); }
+    .choice input { margin:0 9px 0 0; accent-color:var(--green-700); }
+    .choice span { font-size:.8rem; font-weight:700; line-height:1.35; }
+    .consent {
+      display:flex; align-items:flex-start; gap:10px; color:var(--muted); font-size:.76rem; line-height:1.5;
+      padding:16px; background:var(--green-50); border:1px solid var(--green-200); border-radius:12px;
+    }
+    .consent input { margin-top:3px; accent-color:var(--green-700); }
+    .submit-row { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:22px; }
+    .submit-button {
+      border:0; border-radius:12px; min-height:52px; padding:0 22px; color:#fff;
+      background:var(--green-900); font-weight:850; cursor:pointer; box-shadow:0 10px 25px rgba(7,43,30,.18);
+    }
+    .submit-button:hover { background:var(--green-800); transform:translateY(-1px); }
+    .submit-button:disabled { opacity:.65; cursor:wait; transform:none; }
+    .google-note { max-width:320px; color:var(--muted); font-size:.72rem; line-height:1.45; text-align:right; }
+    .success {
+      display:none; padding:24px; margin-top:22px; border-radius:var(--radius-lg);
+      background:var(--green-50); border:1px solid var(--green-200);
+    }
+    .success.show { display:block; }
+    .success strong { display:block; color:var(--green-900); font-size:1.12rem; margin-bottom:6px; }
+    .success p { margin:0; color:var(--muted); line-height:1.55; }
+    .fallback { margin:16px 0 0; color:var(--muted); font-size:.75rem; }
+    .fallback a { color:var(--green-700); font-weight:750; }
+    footer {
+      max-width:var(--max); margin:0 auto; padding:28px 24px 40px;
+      display:flex; justify-content:space-between; gap:20px; color:var(--muted); font-size:.8rem;
+    }
+    footer strong { display:block; color:var(--green-900); margin-bottom:4px; }
+    footer a { color:var(--green-700); font-weight:750; }
+    .sr-only-frame { position:absolute; width:1px; height:1px; border:0; clip:rect(0,0,0,0); overflow:hidden; }
+    @media (max-width:900px) {
+      .quote-layout { grid-template-columns:1fr; }
+      .side-card { position:static; }
+      .steps { grid-template-columns:repeat(3,1fr); }
+      .step { grid-template-columns:1fr; }
+    }
+    @media (max-width:650px) {
+      .site-header { align-items:flex-start; }
+      .wordmark-rest { display:none; }
+      .nav-links { gap:2px; }
+      .nav-links a { padding:8px; font-size:.72rem; }
+      .hero { padding:42px 16px 58px; }
+      h1 { font-size:2.65rem; }
+      .form-card,.side-card { border-radius:20px; padding:22px; }
+      .field-grid,.choice-row,.steps { grid-template-columns:1fr; }
+      .submit-row,footer { align-items:stretch; flex-direction:column; }
+      .submit-button { width:100%; }
+      .google-note { max-width:none; text-align:left; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="https://www.yagi-green.com/" aria-label="Yagi GreenVision Ethiopia website">
+      <span class="wordmark-y">YAGI</span>
+      <span class="wordmark-rest">GreenVision Ethiopia</span>
+    </a>
+    <nav class="nav-links" aria-label="Quotation navigation">
+      <a href="index.html">EV solar selector</a>
+      <a href="https://www.yagi-green.com/">Main website</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Personalized solar recommendation</p>
+        <h1>Tell us what reliable power means to you.</h1>
+        <p>Share your location, essential loads and backup goals. Yagi GreenVision will review the details and recommend an affordable, expandable system for Ethiopia.</p>
+      </div>
+
+      <div class="quote-layout">
+        <aside class="side-card">
+          <p class="section-label">What happens next</p>
+          <h2>A practical recommendation—not a generic package.</h2>
+          <p>Your answers help our engineers balance affordability, reliable backup and future expansion.</p>
+          <div class="steps">
+            <div class="step"><span class="step-number">1</span><div><strong>We review</strong><span>Your loads, location, budget and backup target.</span></div></div>
+            <div class="step"><span class="step-number">2</span><div><strong>We recommend</strong><span>A suitable PV, battery and inverter configuration.</span></div></div>
+            <div class="step"><span class="step-number">3</span><div><strong>We verify</strong><span>Final sizing follows a site and electrical assessment.</span></div></div>
+          </div>
+          <div class="trust-list">
+            <span>Local support</span><span>German engineering</span><span>Expandable systems</span>
+          </div>
+        </aside>
+
+        <form
+          id="quote-form"
+          class="form-card"
+          action="https://docs.google.com/forms/d/e/1FAIpQLScP64ibl_RW72o1QOQr9q_LKEXH3UpVWrXDtYoL1vCDFNB9_w/formResponse"
+          method="post"
+          target="form-target"
+          accept-charset="UTF-8"
+        >
+          <div class="form-heading">
+            <div><p class="section-label">Request a quote</p><h2>Your project details</h2></div>
+            <span class="required-note">* Required</span>
+          </div>
+
+          <section class="quote-section">
+            <h3>1. Contact and location</h3>
+            <p class="section-help">So the Yagi team can discuss the recommendation with you.</p>
+            <div class="field-grid">
+              <label class="field"><span class="field-label">Full name *</span><input name="entry.1070138648" type="text" autocomplete="name" required></label>
+              <label class="field"><span class="field-label">Phone / WhatsApp *</span><input name="entry.1782217784" type="tel" autocomplete="tel" placeholder="+251…" required></label>
+              <label class="field"><span class="field-label">Email <span class="optional">— optional</span></span><input name="entry.13798507" type="email" autocomplete="email"></label>
+              <label class="field"><span class="field-label">City / location *</span><input name="entry.1351191803" type="text" autocomplete="address-level2" placeholder="Addis Ababa, Adama, Hawassa…" required></label>
+            </div>
+          </section>
+
+          <section class="quote-section">
+            <h3>2. Energy requirement</h3>
+            <p class="section-help">Choose the closest option. Our team will refine it with you.</p>
+            <label class="field">
+              <span class="field-label">Which solution are you interested in? *</span>
+              <select id="solution" required>
+                <option value="">Choose a solution</option>
+                <option value="essential">Essential Backup</option>
+                <option value="home-basic">Home Basic</option>
+                <option value="home-plus">Home Plus</option>
+                <option value="sunshare">Compact Backup – Sunshare</option>
+                <option value="ecoflow">Premium Backup – EcoFlow</option>
+                <option value="deye">Advanced Hybrid – Deye</option>
+                <option value="fenecon">Premium Storage – FENECON</option>
+                <option value="business">Business Backup</option>
+                <option value="ev">Solar + EV Charging</option>
+                <option value="commercial">Commercial / Mini-Grid</option>
+                <option value="expansion">System Expansion</option>
+                <option value="unsure">Not Sure – I Need Advice</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field-label">What would you like to power? *</span>
+              <textarea id="loads" placeholder="Example: 8 lights, TV, Wi-Fi router, refrigerator, laptops, phone chargers and a water pump." required></textarea>
+            </label>
+            <div class="field-grid">
+              <label class="field">
+                <span class="field-label">Required backup duration *</span>
+                <select id="duration" required>
+                  <option value="">Choose a duration</option>
+                  <option value="2-4">2–4 hours</option>
+                  <option value="4-8">4–8 hours</option>
+                  <option value="8-12">8–12 hours</option>
+                  <option value="overnight">Overnight</option>
+                  <option value="full-day">Full day</option>
+                  <option value="multi-day">More than one day</option>
+                  <option value="unsure">Not sure</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Approximate budget <span class="optional">— optional</span></span>
+                <select id="budget">
+                  <option value="">Choose or leave blank</option>
+                  <option>Under 150,000 ETB</option>
+                  <option>150,000–250,000 ETB</option>
+                  <option>250,000–450,000 ETB</option>
+                  <option>450,000–750,000 ETB</option>
+                  <option>Above 750,000 ETB</option>
+                  <option>Not sure / Please recommend</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section class="quote-section">
+            <h3>3. EV and additional details</h3>
+            <p class="section-help">This helps us allow for EV charging now or in a future expansion.</p>
+            <fieldset class="field" style="border:0;padding:0;margin:0 0 16px">
+              <legend class="field-label" style="margin-bottom:9px">Do you own or plan to buy an electric vehicle? *</legend>
+              <div class="choice-row">
+                <label class="choice"><input name="ev-visible" type="radio" value="own" required><span>I own an EV</span></label>
+                <label class="choice"><input name="ev-visible" type="radio" value="plan"><span>Planning to buy</span></label>
+                <label class="choice"><input name="ev-visible" type="radio" value="no"><span>No</span></label>
+              </div>
+            </fieldset>
+            <label class="field"><span class="field-label">EV brand / model <span class="optional">— optional</span></span><input name="entry.1377578864" id="ev-model" type="text" placeholder="Example: BYD Seagull / ATTO 1"></label>
+            <label class="field"><span class="field-label">Message / additional information <span class="optional">— optional</span></span><textarea id="additional" placeholder="Existing solar equipment, preferred brands, installation details or questions."></textarea></label>
+          </section>
+
+          <input type="hidden" name="entry.2134175683" id="solution-old">
+          <input type="hidden" name="entry.1897243161" id="solution-new">
+          <input type="hidden" name="entry.1076194012" id="loads-old">
+          <input type="hidden" name="entry.1102093466" id="loads-new">
+          <input type="hidden" name="entry.1453989242" id="duration-old">
+          <input type="hidden" name="entry.1423461646" id="duration-new">
+          <input type="hidden" name="entry.7995339" id="budget-old">
+          <input type="hidden" name="entry.638495039" id="budget-new">
+          <input type="hidden" name="entry.650185134" id="ev-old">
+          <input type="hidden" name="entry.1730307398" id="ev-new">
+          <input type="hidden" name="entry.925040860" id="additional-old">
+          <input type="hidden" name="entry.855594346" id="additional-new">
+          <input type="hidden" name="fvv" value="1">
+          <input type="hidden" name="pageHistory" value="0">
+
+          <label class="consent"><input type="checkbox" required><span>I agree that my information may be stored and processed so Yagi GreenVision can review my requirements and contact me. I can withdraw this consent at any time.</span></label>
+
+          <div class="submit-row">
+            <button id="submit-button" class="submit-button" type="submit">Send quotation request</button>
+            <span class="google-note">Your response is sent securely to Yagi’s existing Google Form and response sheet.</span>
+          </div>
+          <div id="success" class="success" role="status" aria-live="polite">
+            <strong>Thank you—your request has been sent.</strong>
+            <p>The Yagi GreenVision team will review your details and contact you about the most suitable next step.</p>
+          </div>
+          <p class="fallback">If the form does not submit, use the <a href="https://docs.google.com/forms/d/e/1FAIpQLScP64ibl_RW72o1QOQr9q_LKEXH3UpVWrXDtYoL1vCDFNB9_w/viewform" target="_blank" rel="noopener">original Google Form</a>.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <iframe class="sr-only-frame" name="form-target" id="form-target" title="Form submission response"></iframe>
+
+  <footer>
+    <div><strong>Yagi GreenVision Ethiopia</strong><span>Reliable power when you need it most.</span></div>
+    <a href="mailto:info@yagi-green.com">info@yagi-green.com</a>
+  </footer>
+
+  <script>
+    (() => {
+      const form = document.querySelector('#quote-form');
+      const frame = document.querySelector('#form-target');
+      const button = document.querySelector('#submit-button');
+      const success = document.querySelector('#success');
+      let submitted = false;
+
+      const solutionMap = {
+        essential:['Essential Backup','Home Backup'],
+        'home-basic':['Home Basic','Home Backup'],
+        'home-plus':['Home Plus','Home Backup'],
+        sunshare:['Compact Backup – Sunshare','Home Backup'],
+        ecoflow:['Premium Backup – EcoFlow','Home Backup'],
+        deye:['Advanced Hybrid – Deye','Home Backup'],
+        fenecon:['Premium Storage – FENECON','Home Backup'],
+        business:['Business Backup','Business Backup'],
+        ev:['Solar + EV Charging','Solar + EV Charging'],
+        commercial:['Commercial / Mini-Grid','Commercial / Mini-Grid Solution'],
+        expansion:['Not Sure','System Expansion'],
+        unsure:['Not Sure','Not Sure – I Need Advice']
+      };
+      const durationMap = {
+        '2-4':['2–4 hours','2–4 hours'],
+        '4-8':['4–8 hours','4–8 hours'],
+        '8-12':['8–12 hours','8–12 hours'],
+        overnight:['Overnight','Overnight'],
+        'full-day':['Full day','Full-day / extended backup'],
+        'multi-day':['More than one day','Full-day / extended backup'],
+        unsure:['Not sure','Not sure']
+      };
+      const evMap = {
+        own:['Yes, I already own an EV','Yes'],
+        plan:['I plan to buy an EV','Planning to buy one'],
+        no:['No','No']
+      };
+
+      const setValue = (id,value) => { document.querySelector(id).value = value || ''; };
+
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          form.reportValidity();
+          return;
+        }
+        const solution = solutionMap[document.querySelector('#solution').value];
+        const duration = durationMap[document.querySelector('#duration').value];
+        const evChoice = document.querySelector('input[name="ev-visible"]:checked');
+        const ev = evChoice ? evMap[evChoice.value] : null;
+        if (!solution || !duration || !ev) {
+          event.preventDefault();
+          return;
+        }
+
+        const loads = document.querySelector('#loads').value.trim();
+        const budget = document.querySelector('#budget').value;
+        const additional = document.querySelector('#additional').value.trim();
+
+        setValue('#solution-old',solution[0]);
+        setValue('#solution-new',solution[1]);
+        setValue('#loads-old',loads);
+        setValue('#loads-new',loads);
+        setValue('#duration-old',duration[0]);
+        setValue('#duration-new',duration[1]);
+        setValue('#budget-old',budget);
+        setValue('#budget-new',budget);
+        setValue('#ev-old',ev[0]);
+        setValue('#ev-new',ev[1]);
+        setValue('#additional-old',additional);
+        setValue('#additional-new',additional);
+
+        submitted = true;
+        button.disabled = true;
+        button.textContent = 'Sending…';
+        success.classList.remove('show');
+      });
+
+      frame.addEventListener('load', () => {
+        if (!submitted) return;
+        submitted = false;
+        button.disabled = false;
+        button.textContent = 'Send another request';
+        success.classList.add('show');
+        success.scrollIntoView({behavior:'smooth',block:'nearest'});
+      });
+
+      const params = new URLSearchParams(location.search);
+      if (params.get('solution') && solutionMap[params.get('solution')]) {
+        document.querySelector('#solution').value = params.get('solution');
+      }
+      if (params.get('message')) {
+        document.querySelector('#additional').value = params.get('message').slice(0,5000);
+      }
+    })();
+  </script>
+</body>
+</html>
