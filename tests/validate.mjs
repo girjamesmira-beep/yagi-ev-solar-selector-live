@@ -117,7 +117,7 @@ assert.equal(elements["#solar-coverage"].textContent, "100%", "Default coverage"
 assert.equal(elements["#result-status"].textContent, "Solar sized", "Default status");
 assert.match(elements["#package-grid"].innerHTML, /Recommended/, "Balanced recommendation rendered");
 assert.match(elements["#package-grid"].innerHTML, /3\.30/, "Balanced minimum PV rendered");
-assert.match(elements["#quote-link"].href, /^quotation\\.html\\?solution=ev&message=/, "Quotation action rendered");
+assert.ok(elements["#quote-link"].href.startsWith("quotation.html?solution=ev&message="), "Quotation action rendered");
 
 elements["#ev-preset"].value = "custom";
 elements["#ev-preset"].listeners.change();
