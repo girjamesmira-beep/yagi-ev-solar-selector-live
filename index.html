@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Yagi GreenVision Ethiopia EV solar charging selector">
+  <meta name="theme-color" content="#0b3d2b">
+  <title>EV Solar Charging Selector | Yagi GreenVision Ethiopia</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="Yagi GreenVision Ethiopia home">
+      <span class="wordmark-y">YAGI</span>
+      <span class="wordmark-rest">GreenVision Ethiopia</span>
+    </a>
+    <span class="privacy-chip"><span aria-hidden="true">●</span> Private preview</span>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Affordable EV charging for Ethiopia</p>
+        <h1>Turn sunshine into your daily drive.</h1>
+        <p class="hero-text">Choose your EV, driving needs, solar size and available EEU support. Get a practical zero-export system recommendation in seconds.</p>
+        <div class="trust-row" aria-label="Design principles">
+          <span>Reliable power</span><span>EEU import support</span><span>Zero export</span>
+        </div>
+      </div>
+
+      <div class="selector-shell">
+        <form id="selector-form" class="input-card" novalidate>
+          <div class="card-heading">
+            <div>
+              <p class="step-label">Your charging profile</p>
+              <h2>Tell us what you need</h2>
+            </div>
+            <button class="text-button" type="button" id="reset-button">Reset</button>
+          </div>
+
+          <label class="field field-wide">
+            <span class="field-label">Electric vehicle</span>
+            <select id="ev-preset" name="evPreset">
+              <option value="atto1-30">BYD Seagull / Dolphin Surf · 30 kWh</option>
+              <option value="atto1-39" selected>BYD Seagull / ATTO 1 · 38.88 kWh</option>
+              <option value="dolphin-45">BYD Dolphin · 44.9 kWh</option>
+              <option value="atto3-60">BYD ATTO 3 · 60.48 kWh</option>
+              <option value="custom">Other EV / enter manually</option>
+            </select>
+          </label>
+
+          <div class="field-grid">
+            <label class="field">
+              <span class="field-label">Battery capacity</span>
+              <span class="input-with-unit">
+                <input id="battery-capacity" name="batteryCapacity" type="number" min="5" max="200" step="0.1" value="38.88" inputmode="decimal">
+                <span>kWh</span>
+              </span>
+            </label>
+            <label class="field">
+              <span class="field-label">EV consumption</span>
+              <span class="input-with-unit">
+                <input id="consumption" name="consumption" type="number" min="5" max="50" step="0.1" value="13.3" inputmode="decimal">
+                <span>kWh/100 km</span>
+              </span>
+            </label>
+          </div>
+
+          <label class="field field-wide range-field">
+            <span class="range-heading">
+              <span class="field-label">Daily driving</span>
+              <output id="daily-km-output" for="daily-km">50 km</output>
+            </span>
+            <input id="daily-km" name="dailyKm" type="range" min="0" max="300" step="5" value="50">
+            <span class="range-scale"><span>0</span><span>150</span><span>300 km</span></span>
+          </label>
+
+          <div class="field-grid">
+            <label class="field">
+              <span class="field-label">Available or planned PV</span>
+              <span class="input-with-unit">
+                <input id="pv-size" name="pvSize" type="number" min="0" max="100" step="0.1" value="3.3" inputmode="decimal">
+                <span>kWp</span>
+              </span>
+            </label>
+            <label class="field">
+              <span class="field-label">EV maximum AC rate</span>
+              <span class="input-with-unit">
+                <input id="ev-ac-limit" name="evAcLimit" type="number" min="1" max="22" step="0.1" value="6.6" inputmode="decimal">
+                <span>kW</span>
+              </span>
+            </label>
+          </div>
+
+          <fieldset class="field field-wide">
+            <legend class="field-label">EEU grid support available for EV charging</legend>
+            <div class="segmented" id="grid-options">
+              <button type="button" data-grid="0">None</button>
+              <button type="button" data-grid="1.5">Limited 1.5 kW</button>
+              <button type="button" data-grid="3.3" class="active" aria-pressed="true">Standard 3.3 kW</button>
+              <button type="button" data-grid="7">Strong 7 kW</button>
+            </div>
+            <span class="field-help">This is the power the property can import for the EV after normal building loads.</span>
+          </fieldset>
+
+          <details class="assumption-controls">
+            <summary>Adjust solar assumptions</summary>
+            <div class="field-grid assumption-grid">
+              <label class="field">
+                <span class="field-label">Peak-sun-hours/day</span>
+                <span class="input-with-unit">
+                  <input id="sun-hours" name="sunHours" type="number" min="2" max="8" step="0.1" value="5.5" inputmode="decimal">
+                  <span>h</span>
+                </span>
+              </label>
+              <label class="field">
+                <span class="field-label">PV performance factor</span>
+                <span class="input-with-unit">
+                  <input id="performance-ratio" name="performanceRatio" type="number" min="50" max="95" step="1" value="78" inputmode="numeric">
+                  <span>%</span>
+                </span>
+              </label>
+            </div>
+          </details>
+
+          <p id="form-error" class="form-error" role="alert" hidden></p>
+        </form>
+
+        <aside class="result-card" aria-live="polite" aria-atomic="true">
+          <div class="result-topline">
+            <span class="result-kicker">Your entered system</span>
+            <span id="result-status" class="status-pill">Well sized</span>
+          </div>
+          <h2><span id="daily-energy">7.4</span> kWh <small>needed from the charger daily</small></h2>
+
+          <div class="coverage-visual">
+            <div class="coverage-label">
+              <span>Estimated solar coverage</span>
+              <strong id="solar-coverage">100%</strong>
+            </div>
+            <div class="progress-track" role="progressbar" aria-label="Daily EV energy covered by solar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+              <span id="coverage-bar"></span>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric">
+              <span>Solar energy/day</span>
+              <strong id="solar-yield">14.2 kWh</strong>
+              <small id="solar-range">≈ 96 km/day</small>
+            </div>
+            <div class="metric">
+              <span>Solar charging time</span>
+              <strong id="solar-time">3.0 h</strong>
+              <small>for daily driving energy</small>
+            </div>
+            <div class="metric">
+              <span>EEU supplement</span>
+              <strong id="grid-energy">0.0 kWh</strong>
+              <small id="grid-time">No import needed</small>
+            </div>
+            <div class="metric">
+              <span>Full-battery equivalent</span>
+              <strong id="full-charge-days">3.1 days</strong>
+              <small>using daily solar yield only</small>
+            </div>
+          </div>
+
+          <div id="energy-note" class="energy-note"></div>
+
+          <div class="result-actions">
+            <a id="quote-link" class="primary-button" href="mailto:info@yagi-green.com">Request a verified quote</a>
+            <button id="copy-result" class="secondary-button" type="button">Copy result</button>
+          </div>
+          <p class="disclaimer">Indicative pre-sizing only. Final design requires a site survey, roof check and confirmation of the EEU service capacity.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="packages" id="packages">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Recommendation-first</p>
+          <h2>Three sensible ways to start</h2>
+        </div>
+        <p>We size around your daily driving—not the full EV battery—so the system stays affordable.</p>
+      </div>
+      <div id="package-grid" class="package-grid"></div>
+    </section>
+
+    <section class="technical">
+      <div class="technical-copy">
+        <p class="eyebrow">Designed for no export</p>
+        <h2>Solar first. EEU only fills the gap.</h2>
+        <p>The inverter uses a smart meter or CT at the point of connection and is commissioned to a <strong>0 W export limit</strong>. The EV charger and normal site loads remain behind the meter; EEU energy may be imported, but PV is not intentionally exported.</p>
+
+        <div class="flow" aria-label="Zero-export energy flow">
+          <div class="flow-item"><span class="flow-icon sun">☀</span><span><strong>PV array</strong><small>Primary energy</small></span></div>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-item"><span class="flow-icon">⌁</span><span><strong>Hybrid inverter</strong><small>Zero-export control</small></span></div>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-item"><span class="flow-icon">⚡</span><span><strong>EV charger</strong><small>Controlled load</small></span></div>
+          <div class="grid-branch"><span>EEU import support</span><span aria-hidden="true">↑</span></div>
+        </div>
+      </div>
+
+      <div class="assumptions-card">
+        <h3>Assumptions used</h3>
+        <ul>
+          <li><span>Charging efficiency</span><strong>90%</strong></li>
+          <li><span>Default solar resource</span><strong>5.5 PSH/day</strong></li>
+          <li><span>PV performance factor</span><strong>78%</strong></li>
+          <li><span>Direct-solar power factor</span><strong>75% of kWp</strong></li>
+          <li><span>EEU behavior</span><strong>Import only</strong></li>
+        </ul>
+        <p>Weather, dust, shading, module orientation, battery temperature and building loads can change actual results. A stationary battery is <strong>not required</strong> for daytime EV charging; add one only when outage or night charging is important.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Yagi GreenVision Ethiopia</strong>
+      <span>Reliable power when you need it most.</span>
+    </div>
+    <a href="mailto:info@yagi-green.com">info@yagi-green.com</a>
+  </footer>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
