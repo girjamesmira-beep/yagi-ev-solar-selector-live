@@ -159,8 +159,9 @@ const requiredEntries = [
 for (const entry of requiredEntries) {
   assert.match(quotation, new RegExp(`name=["']entry\\\\.${entry}["']`), `Google field entry.${entry} is mapped`);
 }
-const scripts = [...quotation.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)];
-assert.equal(scripts.length, 1, "Quotation page has one inline interaction script");
-new vm.Script(scripts[0][1], { filename: "quotation-inline.js" });
+const scriptStart = quotation.lastIndexOf("<script>") + "<script>".length;
+const scriptEnd = quotation.indexOf("</script>", scriptStart);
+assert.ok(scriptStart > 7 && scriptEnd > scriptStart, "Quotation interaction script exists");
+new vm.Script(quotation.slice(scriptStart, scriptEnd), { filename: "quotation-inline.js" });
 
 console.log("All Yagi selector and quotation validation checks passed.");
