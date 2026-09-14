@@ -157,7 +157,7 @@ const requiredEntries = [
   "1070138648", "1782217784", "13798507", "1351191803", "1377578864"
 ];
 for (const entry of requiredEntries) {
-  assert.match(quotation, new RegExp(`name=["']entry\\\\.${entry}["']`), `Google field entry.${entry} is mapped`);
+  assert.ok(quotation.includes(`name="entry.${entry}"`), `Google field entry.${entry} is mapped`);
 }
 const scriptStart = quotation.lastIndexOf("<script>") + "<script>".length;
 const scriptEnd = quotation.indexOf("</script>", scriptStart);
