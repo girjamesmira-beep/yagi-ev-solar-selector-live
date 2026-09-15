@@ -91,11 +91,11 @@
     .field:last-child { margin-bottom:0; }
     .field-label { color:#33483f; font-size:.82rem; font-weight:760; }
     .optional { color:var(--muted); font-weight:500; }
-    input:not([type="checkbox"]),select,textarea {
+    input:not([type="checkbox"]):not([type="radio"]),select,textarea {
       width:100%; color:var(--ink); background:#fbfdfc; border:1px solid #ccd9d2;
       border-radius:12px; padding:13px 14px; transition:border-color .18s,box-shadow .18s,background .18s;
     }
-    input:not([type="checkbox"]),select { min-height:50px; }
+    input:not([type="checkbox"]):not([type="radio"]),select { min-height:50px; }
     textarea { min-height:122px; resize:vertical; line-height:1.5; }
     input:hover,select:hover,textarea:hover { border-color:#9cb8a9; }
     input:focus,select:focus,textarea:focus {
@@ -109,6 +109,11 @@
     .choice:has(input:checked) { border-color:var(--green-500); background:var(--green-50); box-shadow:0 0 0 3px rgba(58,166,111,.1); }
     .choice input { margin:0 9px 0 0; accent-color:var(--green-700); }
     .choice span { font-size:.8rem; font-weight:700; line-height:1.35; }
+    .component-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .component-choice { min-height:70px; align-items:flex-start; }
+    .component-choice span { display:grid; gap:3px; }
+    .component-choice strong { color:var(--green-900); font-size:.84rem; }
+    .component-choice small { color:var(--muted); font-size:.7rem; font-weight:550; line-height:1.35; }
     .consent {
       display:flex; align-items:flex-start; gap:10px; color:var(--muted); font-size:.76rem; line-height:1.5;
       padding:16px; background:var(--green-50); border:1px solid var(--green-200); border-radius:12px;
@@ -152,7 +157,7 @@
       .hero { padding:42px 16px 58px; }
       h1 { font-size:2.65rem; }
       .form-card,.side-card { border-radius:20px; padding:22px; }
-      .field-grid,.choice-row,.steps { grid-template-columns:1fr; }
+      .field-grid,.choice-row,.component-grid,.steps { grid-template-columns:1fr; }
       .submit-row,footer { align-items:stretch; flex-direction:column; }
       .submit-button { width:100%; }
       .google-note { max-width:none; text-align:left; }
@@ -270,6 +275,19 @@
                 </select>
               </label>
             </div>
+
+            <fieldset class="field" style="border:0;padding:0;margin:20px 0 0">
+              <legend class="field-label" style="margin-bottom:5px">Preferred technology / components <span class="optional">— optional</span></legend>
+              <p class="section-help" style="margin-bottom:12px">Select any technologies you prefer. Yagi will confirm compatibility and recommend the best configuration.</p>
+              <div class="component-grid">
+                <label class="choice component-choice"><input name="preferred-component" type="checkbox" value="SOFAR hybrid inverter and battery system"><span><strong>SOFAR</strong><small>Hybrid inverter and battery system</small></span></label>
+                <label class="choice component-choice"><input name="preferred-component" type="checkbox" value="Sunwoda battery energy storage"><span><strong>Sunwoda</strong><small>Battery energy storage solution</small></span></label>
+                <label class="choice component-choice"><input name="preferred-component" type="checkbox" value="Deye hybrid system"><span><strong>Deye</strong><small>Hybrid inverter and storage</small></span></label>
+                <label class="choice component-choice"><input name="preferred-component" type="checkbox" value="FENECON premium storage"><span><strong>FENECON</strong><small>Premium battery storage</small></span></label>
+                <label class="choice component-choice"><input name="preferred-component" type="checkbox" value="EcoFlow portable backup"><span><strong>EcoFlow</strong><small>Portable premium backup</small></span></label>
+                <label class="choice component-choice"><input id="no-component-preference" name="preferred-component" type="checkbox" value="No preference — please recommend"><span><strong>No preference</strong><small>Let Yagi recommend the suitable option</small></span></label>
+              </div>
+            </fieldset>
           </section>
 
           <section class="quote-section">
@@ -363,6 +381,18 @@
       };
 
       const setValue = (id,value) => { document.querySelector(id).value = value || ''; };
+      const componentChoices = [...document.querySelectorAll('input[name="preferred-component"]')];
+      const noPreference = document.querySelector('#no-component-preference');
+
+      componentChoices.forEach(choice => {
+        choice.addEventListener('change', () => {
+          if (choice === noPreference && choice.checked) {
+            componentChoices.filter(item => item !== noPreference).forEach(item => { item.checked = false; });
+          } else if (choice.checked) {
+            noPreference.checked = false;
+          }
+        });
+      });
 
       form.addEventListener('submit', event => {
         if (!form.checkValidity()) {
@@ -382,6 +412,11 @@
         const loads = document.querySelector('#loads').value.trim();
         const budget = document.querySelector('#budget').value;
         const additional = document.querySelector('#additional').value.trim();
+        const preferredComponents = componentChoices.filter(choice => choice.checked).map(choice => choice.value);
+        const componentNote = preferredComponents.length
+          ? `Preferred technology / components: ${preferredComponents.join(', ')}`
+          : '';
+        const combinedAdditional = [componentNote, additional].filter(Boolean).join('\n\n');
 
         setValue('#solution-old',solution[0]);
         setValue('#solution-new',solution[1]);
@@ -393,8 +428,8 @@
         setValue('#budget-new',budget);
         setValue('#ev-old',ev[0]);
         setValue('#ev-new',ev[1]);
-        setValue('#additional-old',additional);
-        setValue('#additional-new',additional);
+        setValue('#additional-old',combinedAdditional);
+        setValue('#additional-new',combinedAdditional);
 
         submitted = true;
         button.disabled = true;
