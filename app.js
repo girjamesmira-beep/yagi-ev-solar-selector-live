@@ -6,10 +6,10 @@
   const PANEL_KWP = 0.55;
 
   const EVS = {
-    "atto1-30": { battery: 30.0, consumption: 13.0, acLimit: 6.6 },
-    "atto1-39": { battery: 38.88, consumption: 13.3, acLimit: 6.6 },
-    "dolphin-45": { battery: 44.9, consumption: 15.2, acLimit: 7.0 },
-    "atto3-60": { battery: 60.48, consumption: 16.0, acLimit: 7.0 }
+    "atto1-30": { name: "BYD Seagull / Dolphin Surf · 30 kWh", battery: 30.0, consumption: 13.0, acLimit: 6.6 },
+    "atto1-39": { name: "BYD Seagull / ATTO 1 · 38.88 kWh", battery: 38.88, consumption: 13.3, acLimit: 6.6 },
+    "dolphin-45": { name: "BYD Dolphin · 44.9 kWh", battery: 44.9, consumption: 15.2, acLimit: 7.0 },
+    "atto3-60": { name: "BYD ATTO 3 · 60.48 kWh", battery: 60.48, consumption: 16.0, acLimit: 7.0 }
   };
 
   const els = {
@@ -35,7 +35,10 @@
     solarRange: document.querySelector("#solar-range"),
     solarTime: document.querySelector("#solar-time"),
     gridEnergy: document.querySelector("#grid-energy"),
+    gridEnergyLabel: document.querySelector("#grid-energy-label"),
     gridTime: document.querySelector("#grid-time"),
+    assumedSunHours: document.querySelector("#assumed-sun-hours"),
+    assumedPerformance: document.querySelector("#assumed-performance"),
     fullChargeDays: document.querySelector("#full-charge-days"),
     energyNote: document.querySelector("#energy-note"),
     packageGrid: document.querySelector("#package-grid"),
@@ -49,6 +52,7 @@
   let toastTimer;
 
   function finiteNumber(value) {
+    if (String(value).trim() === "") return NaN;
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : NaN;
   }
@@ -189,11 +193,22 @@
     const pkgInput = { ...input, pvSize: pvKwp };
     const calc = calculate(pkgInput, target.charger);
     const inverter = inverterFor(pvKwp);
-    const gridPowerNote = target.charger > input.gridSupport
+    const gridPowerNote = input.gridSupport === 0
+      ? "Off-grid operation requires a verified grid-forming system and charging controls"
+      : target.charger > input.gridSupport
       ? `Dynamic EV charging control capped to the selected ${input.gridSupport.toFixed(1)} kW EEU import allowance`
       : `EV charger coordinated with the ${input.gridSupport.toFixed(1)} kW EEU allowance`;
 
-    return { ...target, ...calc, ...inverter, pvKwp, panelCount, gridPowerNote };
+    return {
+      ...target, ...calc, ...inverter, pvKwp, panelCount, gridPowerNote,
+      gridAvailable: input.gridSupport > 0,
+      subtitle: input.gridSupport === 0 && kind === "entry"
+        ? "Smallest PV option; check the daily energy shortfall before choosing."
+        : target.subtitle,
+      battery: input.gridSupport === 0
+        ? "Battery requirement to be confirmed for the off-grid configuration"
+        : target.battery
+    };
   }
 
   function packageMarkup(pkg, recommended = false) {
@@ -218,7 +233,7 @@
         </div>
         <div class="package-stats">
           <div class="package-stat"><span>Daily solar</span><strong>${pkg.solarYield.toFixed(1)} kWh</strong></div>
-          <div class="package-stat"><span>EEU top-up</span><strong>${gridText}</strong></div>
+          <div class="package-stat"><span>${pkg.gridAvailable ? "EEU top-up" : "Unmet energy"}</span><strong>${gridText}</strong></div>
           <div class="package-stat"><span>Daily charge time</span><strong>${formatHours(pkg.solarTime)}</strong></div>
           <div class="package-stat"><span>Full-battery time*</span><strong>${fullTime}</strong></div>
         </div>
@@ -262,7 +277,9 @@
 
     if (calc.coverage >= 100) {
       els.status.textContent = "Solar sized";
-      els.energyNote.textContent = "Estimated daily PV energy covers the selected driving need. EEU remains available as import-only backup when weather or site loads reduce solar.";
+      els.energyNote.textContent = input.gridSupport > 0
+        ? "Estimated daily PV energy covers the selected driving need. Available EEU supply can supplement solar when weather or site loads reduce production."
+        : "Estimated daily PV energy covers the selected driving need. With no EEU support, charging depends on daylight and a compatible off-grid configuration; battery and grid-forming requirements need verification.";
       return;
     }
 
@@ -275,15 +292,16 @@
   function buildSummary(input, calc, packages) {
     return [
       "Yagi GreenVision Ethiopia — EV solar pre-sizing",
+      `Vehicle: ${EVS[els.preset.value]?.name || "Other EV / entered manually"}`,
       `EV battery: ${input.batteryCapacity.toFixed(1)} kWh`,
       `Daily driving: ${input.dailyKm.toFixed(0)} km`,
       `Daily charger energy: ${calc.wallEnergy.toFixed(1)} kWh`,
       `Entered PV: ${input.pvSize.toFixed(1)} kWp`,
       `Estimated daily solar: ${calc.solarYield.toFixed(1)} kWh (${Math.round(calc.coverage)}% coverage)`,
-      `Estimated EEU supplement: ${calc.gridNeed.toFixed(1)} kWh/day`,
+      `${input.gridSupport > 0 ? "Estimated EEU supplement" : "Unmet energy"}: ${calc.gridNeed.toFixed(1)} kWh/day`,
       `EEU support selected: ${input.gridSupport.toFixed(1)} kW`,
       `Recommended balanced package: ${packages[1].pvKwp.toFixed(2)} kWp PV, ${packages[1].inverterKw} kW hybrid inverter, ${packages[1].charger.toFixed(1)} kW EVSE, 0 W export control`,
-      "Assumptions: 90% charging efficiency; selected peak-sun-hours and PV performance factor.",
+      `Assumptions: 90% charging efficiency; ${input.sunHours.toFixed(1)} peak-sun-hours/day; ${Math.round(input.performanceRatio * 100)}% PV performance factor.`,
       "Indicative only — site survey and electrical verification required."
     ].join("\n");
   }
@@ -309,6 +327,9 @@
     els.solarRange.textContent = `≈ ${Math.round(calc.solarKm)} km/day`;
     els.solarTime.textContent = formatHours(calc.solarTime);
     els.gridEnergy.textContent = `${calc.gridNeed.toFixed(1)} kWh`;
+    els.gridEnergyLabel.textContent = input.gridSupport > 0 ? "EEU supplement" : "Unmet energy";
+    els.assumedSunHours.textContent = `${input.sunHours.toFixed(1)} PSH/day`;
+    els.assumedPerformance.textContent = `${Math.round(input.performanceRatio * 100)}%`;
     els.gridTime.textContent = calc.gridNeed <= 0.05
       ? "No import needed"
       : Number.isFinite(calc.gridTime)
@@ -321,7 +342,8 @@
 
     lastSummary = buildSummary(input, calc, packages);
     const quoteMessage = encodeURIComponent(`EV solar selector result:\n\n${lastSummary}`);
-    els.quoteLink.href = `quotation.html?solution=ev&message=${quoteMessage}`;
+    const vehicle = EVS[els.preset.value]?.name || "";
+    els.quoteLink.href = `quotation.html?solution=ev&message=${quoteMessage}&vehicle=${encodeURIComponent(vehicle)}`;
   }
 
   function setGridSupport(value) {

@@ -57,7 +57,7 @@ a { color: inherit; }
 }
 .wordmark {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   text-decoration: none;
   letter-spacing: -.02em;
@@ -69,6 +69,10 @@ a { color: inherit; }
   letter-spacing: .08em;
 }
 .wordmark-rest { color: var(--green-700); font-size: .92rem; font-weight: 650; }
+.brand-logo { display: block; width: 84px; height: 60px; object-fit: contain; background: #163d32; border-radius: 7px; }
+.nav-links { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
+.nav-links a { padding: 10px 12px; font-size: .8rem; font-weight: 750; text-decoration: none; border-radius: 8px; }
+.nav-links a:hover { background: var(--green-100); }
 .privacy-chip {
   display: inline-flex;
   align-items: center;
@@ -587,7 +591,8 @@ footer a { color: #d7eadf; text-underline-offset: 4px; }
   .technical-copy { max-width: 820px; }
 }
 @media (max-width: 680px) {
-  .site-header { height: 64px; padding-inline: 18px; }
+  .site-header { min-height: 72px; height: auto; gap: 10px; padding: 6px 16px; }
+  .nav-links a { padding: 8px; font-size: .72rem; }
   .wordmark-rest { display: none; }
   .hero, .packages, .technical { padding-inline: 16px; }
   .hero { padding-top: 52px; padding-bottom: 60px; }

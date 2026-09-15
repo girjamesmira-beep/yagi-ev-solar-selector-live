@@ -11,11 +11,14 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="wordmark" href="#top" aria-label="Yagi GreenVision Ethiopia home">
-      <span class="wordmark-y">YAGI</span>
+    <a class="wordmark" href="https://www.yagi-green.com/" aria-label="Yagi GreenVision Ethiopia website">
+      <img class="brand-logo" src="https://www.yagi-green.com/wp-content/uploads/go-x/u/df1893c1-50a4-45e9-8d19-f3d05a7419cc/image-384x276.png" width="84" height="60" alt="Yagi GreenVision">
       <span class="wordmark-rest">GreenVision Ethiopia</span>
     </a>
-    <span class="privacy-chip"><span aria-hidden="true">●</span> Live customer tool</span>
+    <nav class="nav-links" aria-label="Customer tools navigation">
+      <a href="quotation.html">Get a Quote</a>
+      <a href="https://www.yagi-green.com/">Main website</a>
+    </nav>
   </header>
 
   <main id="top">
@@ -156,7 +159,7 @@
               <small>for daily driving energy</small>
             </div>
             <div class="metric">
-              <span>EEU supplement</span>
+              <span id="grid-energy-label">EEU supplement</span>
               <strong id="grid-energy">0.0 kWh</strong>
               <small id="grid-time">No import needed</small>
             </div>
@@ -209,12 +212,12 @@
         <h3>Assumptions used</h3>
         <ul>
           <li><span>Charging efficiency</span><strong>90%</strong></li>
-          <li><span>Default solar resource</span><strong>5.5 PSH/day</strong></li>
-          <li><span>PV performance factor</span><strong>78%</strong></li>
+          <li><span>Solar resource</span><strong id="assumed-sun-hours">5.5 PSH/day</strong></li>
+          <li><span>PV performance factor</span><strong id="assumed-performance">78%</strong></li>
           <li><span>Direct-solar power factor</span><strong>75% of kWp</strong></li>
           <li><span>EEU behavior</span><strong>Import only</strong></li>
         </ul>
-        <p>Weather, dust, shading, module orientation, battery temperature and building loads can change actual results. A stationary battery is <strong>not required</strong> for daytime EV charging; add one only when outage or night charging is important.</p>
+        <p>Weather, dust, shading, module orientation, battery temperature and building loads can change actual results. Some compatible systems can charge during the day without a stationary battery while the grid is available. Off-grid, outage and night charging require a separately verified configuration and may require a battery.</p>
       </div>
     </section>
   </main>

@@ -16,6 +16,8 @@
       --radius-xl:28px; --radius-lg:20px; --radius-md:14px; --max:1160px;
     }
     * { box-sizing:border-box; }
+    [hidden] { display:none !important; }
+    .brand-logo { display:block; width:84px; height:60px; object-fit:contain; background:#163d32; border-radius:7px; }
     html { scroll-behavior:smooth; }
     body {
       margin:0; min-width:320px; color:var(--ink); background:var(--canvas);
@@ -31,7 +33,7 @@
       background:rgba(245,247,246,.94); backdrop-filter:blur(14px);
       border-bottom:1px solid rgba(11,61,43,.08); position:sticky; top:0; z-index:20;
     }
-    .wordmark { display:flex; align-items:baseline; gap:8px; text-decoration:none; letter-spacing:-.02em; }
+    .wordmark { display:flex; align-items:center; gap:8px; text-decoration:none; letter-spacing:-.02em; }
     .wordmark-y { color:var(--green-900); font-size:1.2rem; font-weight:900; letter-spacing:.08em; }
     .wordmark-rest { color:var(--green-700); font-size:.92rem; font-weight:650; }
     .nav-links { display:flex; align-items:center; gap:10px; }
@@ -142,7 +144,7 @@
     }
     footer strong { display:block; color:var(--green-900); margin-bottom:4px; }
     footer a { color:var(--green-700); font-weight:750; }
-    .sr-only-frame { position:absolute; width:1px; height:1px; border:0; clip:rect(0,0,0,0); overflow:hidden; }
+    .submission-response { width:100%; height:340px; margin-top:16px; border:1px solid var(--line); border-radius:12px; background:white; }
     @media (max-width:900px) {
       .quote-layout { grid-template-columns:1fr; }
       .side-card { position:static; }
@@ -167,7 +169,7 @@
 <body>
   <header class="site-header">
     <a class="wordmark" href="https://www.yagi-green.com/" aria-label="Yagi GreenVision Ethiopia website">
-      <span class="wordmark-y">YAGI</span>
+      <img class="brand-logo" src="https://www.yagi-green.com/wp-content/uploads/go-x/u/df1893c1-50a4-45e9-8d19-f3d05a7419cc/image-384x276.png" width="84" height="60" alt="Yagi GreenVision">
       <span class="wordmark-rest">GreenVision Ethiopia</span>
     </a>
     <nav class="nav-links" aria-label="Quotation navigation">
@@ -233,6 +235,8 @@
                 <option value="essential">Essential Backup</option>
                 <option value="home-basic">Home Basic</option>
                 <option value="home-plus">Home Plus</option>
+                <option value="sofar">Reliable Hybrid Backup – SOFAR</option>
+                <option value="sunwoda">Battery Storage – Sunwoda</option>
                 <option value="sunshare">Compact Backup – Sunshare</option>
                 <option value="ecoflow">Premium Backup – EcoFlow</option>
                 <option value="deye">Advanced Hybrid – Deye</option>
@@ -301,7 +305,7 @@
                 <label class="choice"><input name="ev-visible" type="radio" value="no"><span>No</span></label>
               </div>
             </fieldset>
-            <label class="field"><span class="field-label">EV brand / model <span class="optional">— optional</span></span><input name="entry.1377578864" id="ev-model" type="text" placeholder="Example: BYD Seagull / ATTO 1"></label>
+            <label class="field" id="ev-model-field"><span class="field-label">EV brand / model <span class="optional">— optional</span></span><input name="entry.1377578864" id="ev-model" type="text" maxlength="120" placeholder="Example: BYD Seagull / ATTO 1"></label>
             <label class="field"><span class="field-label">Message / additional information <span class="optional">— optional</span></span><textarea id="additional" placeholder="Existing solar equipment, preferred brands, installation details or questions."></textarea></label>
           </section>
 
@@ -324,19 +328,18 @@
 
           <div class="submit-row">
             <button id="submit-button" class="submit-button" type="submit">Send quotation request</button>
-            <span class="google-note">Your response is sent securely to Yagi’s existing Google Form and response sheet.</span>
+            <span class="google-note">We use your details to review your project and contact you about your request.</span>
           </div>
           <div id="success" class="success" role="status" aria-live="polite">
-            <strong>Thank you—your request has been sent.</strong>
-            <p>The Yagi GreenVision team will review your details and contact you about the most suitable next step.</p>
+            <strong>Check your submission confirmation below.</strong>
+            <p>A successful submission is confirmed in the response below. If an error appears, update your details and resend, or contact Yagi directly.</p>
           </div>
-          <p class="fallback">If the form does not submit, use the <a href="https://docs.google.com/forms/d/e/1FAIpQLScP64ibl_RW72o1QOQr9q_LKEXH3UpVWrXDtYoL1vCDFNB9_w/viewform" target="_blank" rel="noopener">original Google Form</a>.</p>
+          <iframe hidden class="submission-response" name="form-target" id="form-target" title="Quotation submission confirmation"></iframe>
+          <p class="fallback">Need help? <a href="https://wa.me/251916865092">Contact Yagi on WhatsApp</a> or <a href="mailto:info@yagi-green.com">email info@yagi-green.com</a>.</p>
         </form>
       </div>
     </section>
   </main>
-
-  <iframe class="sr-only-frame" name="form-target" id="form-target" title="Form submission response"></iframe>
 
   <footer>
     <div><strong>Yagi GreenVision Ethiopia</strong><span>Reliable power when you need it most.</span></div>
@@ -355,6 +358,8 @@
         essential:['Essential Backup','Home Backup'],
         'home-basic':['Home Basic','Home Backup'],
         'home-plus':['Home Plus','Home Backup'],
+        sofar:['SOFAR hybrid backup','Home Backup'],
+        sunwoda:['Sunwoda battery storage','Home Backup'],
         sunshare:['Compact Backup – Sunshare','Home Backup'],
         ecoflow:['Premium Backup – EcoFlow','Home Backup'],
         deye:['Advanced Hybrid – Deye','Home Backup'],
@@ -383,6 +388,13 @@
       const setValue = (id,value) => { document.querySelector(id).value = value || ''; };
       const componentChoices = [...document.querySelectorAll('input[name="preferred-component"]')];
       const noPreference = document.querySelector('#no-component-preference');
+      const modelField = document.querySelector('#ev-model-field');
+      document.querySelectorAll('input[name="ev-visible"]').forEach(choice => {
+        choice.addEventListener('change', () => {
+          modelField.hidden = choice.value === 'no';
+          document.querySelector('#ev-model').disabled = choice.value === 'no';
+        });
+      });
 
       componentChoices.forEach(choice => {
         choice.addEventListener('change', () => {
@@ -434,6 +446,7 @@
         submitted = true;
         button.disabled = true;
         button.textContent = 'Sending…';
+        frame.hidden = true;
         success.classList.remove('show');
       });
 
@@ -441,8 +454,9 @@
         if (!submitted) return;
         submitted = false;
         button.disabled = false;
-        button.textContent = 'Send another request';
+        button.textContent = 'Send quotation request';
         success.classList.add('show');
+        frame.hidden = false;
         success.scrollIntoView({behavior:'smooth',block:'nearest'});
       });
 
@@ -453,6 +467,16 @@
       if (params.get('message')) {
         document.querySelector('#additional').value = params.get('message').slice(0,5000);
       }
+      if (params.get('package')) {
+        const existingMessage = document.querySelector('#additional').value;
+        document.querySelector('#additional').value = ['Selected package: ' + params.get('package').slice(0,120), existingMessage].filter(Boolean).join('\n\n');
+      }
+      if (params.get('vehicle')) {
+        document.querySelector('#ev-model').value = params.get('vehicle').slice(0,120);
+      }
+      const requestedBrand = (params.get('brand') || params.get('solution') || '').toLowerCase();
+      const preferredChoice = componentChoices.find(choice => choice.value.toLowerCase().startsWith(requestedBrand + ' '));
+      if (preferredChoice) preferredChoice.checked = true;
     })();
   </script>
 </body>

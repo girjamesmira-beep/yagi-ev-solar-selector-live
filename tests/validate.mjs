@@ -64,7 +64,10 @@ const values = {
   "#solar-range": "",
   "#solar-time": "",
   "#grid-energy": "",
+  "#grid-energy-label": "",
   "#grid-time": "",
+  "#assumed-sun-hours": "",
+  "#assumed-performance": "",
   "#full-charge-days": "",
   "#energy-note": "",
   "#package-grid": "",
@@ -137,6 +140,19 @@ elements["#daily-km"].value = "50";
 elements["#grid-options"].listeners.click({ target: gridButtons[0] });
 assert.equal(elements["#result-status"].textContent, "No charging source", "No-source warning");
 assert.ok(elements["#result-status"].classList.contains("danger"), "No-source danger style");
+assert.equal(elements["#grid-energy-label"].textContent, "Unmet energy", "No-grid shortfall is not presented as available EEU energy");
+assert.match(elements["#package-grid"].innerHTML, /Unmet energy/, "No-grid package shortfall is labelled accurately");
+assert.doesNotMatch(elements["#package-grid"].innerHTML, /EEU fills|No stationary battery required/, "Off-grid packages do not promise unavailable grid or unconditional battery-free operation");
+
+elements["#sun-hours"].value = "4";
+elements["#performance-ratio"].value = "65";
+elements["#selector-form"].listeners.input();
+assert.equal(elements["#assumed-sun-hours"].textContent, "4.0 PSH/day", "Displayed solar assumptions follow the selected values");
+assert.equal(elements["#assumed-performance"].textContent, "65%", "Displayed performance assumption follows the input");
+
+elements["#ev-preset"].value = "atto3-60";
+elements["#ev-preset"].listeners.change();
+assert.match(decodeURIComponent(elements["#quote-link"].href), /vehicle=BYD ATTO 3/, "The selected vehicle is carried to the quotation form");
 
 elements["#daily-km"].value = "0";
 elements["#selector-form"].listeners.input();
@@ -165,6 +181,49 @@ for (const entry of requiredEntries) {
 const scriptStart = quotation.lastIndexOf("<script>") + "<script>".length;
 const scriptEnd = quotation.indexOf("</script>", scriptStart);
 assert.ok(scriptStart > 7 && scriptEnd > scriptStart, "Quotation interaction script exists");
-new vm.Script(quotation.slice(scriptStart, scriptEnd), { filename: "quotation-inline.js" });
+const quotationScript = new vm.Script(quotation.slice(scriptStart, scriptEnd), { filename: "quotation-inline.js" });
+const quoteElements = Object.fromEntries([
+  '#quote-form', '#form-target', '#submit-button', '#success', '#solution', '#duration',
+  '#loads', '#budget', '#additional', '#ev-model', '#ev-model-field',
+  '#solution-old', '#solution-new', '#loads-old', '#loads-new', '#duration-old', '#duration-new',
+  '#budget-old', '#budget-new', '#ev-old', '#ev-new', '#additional-old', '#additional-new'
+].map(id => [id, new Element()]));
+const componentInputs = ['SOFAR hybrid inverter and battery system', 'Sunwoda battery energy storage', 'No preference — please recommend'].map(value => new Element(value));
+const evInputs = ['own', 'plan', 'no'].map(value => new Element(value));
+evInputs[0].checked = true;
+quoteElements['#quote-form'].checkValidity = () => true;
+const quoteDocument = {
+  querySelector(selector) {
+    if (selector === '#no-component-preference') return componentInputs[2];
+    if (selector === 'input[name="ev-visible"]:checked') return evInputs.find(input => input.checked);
+    assert.ok(selector in quoteElements, `Missing quotation test element: ${selector}`);
+    return quoteElements[selector];
+  },
+  querySelectorAll(selector) {
+    if (selector === 'input[name="preferred-component"]') return componentInputs;
+    if (selector === 'input[name="ev-visible"]') return evInputs;
+    throw new Error(`Unexpected quotation selector: ${selector}`);
+  }
+};
+quotationScript.runInNewContext({document: quoteDocument, URLSearchParams, location: {search:'?solution=sunwoda&vehicle=BYD%20ATTO%203&package=Home%20Storage&message=Existing%20system'}, console});
+assert.equal(quoteElements['#solution'].value, 'sunwoda', 'A solution card preselects its solution');
+assert.equal(quoteElements['#ev-model'].value, 'BYD ATTO 3', 'EV handoff fills the model field');
+assert.equal(componentInputs[1].checked, true, 'Sunwoda card carries the component preference');
+assert.match(quoteElements['#additional'].value, /Selected package: Home Storage\n\nExisting system/, 'Package details and the existing summary are both preserved');
+quoteElements['#duration'].value = '4-8';
+quoteElements['#loads'].value = 'Lights and refrigerator';
+quoteElements['#quote-form'].listeners.submit({preventDefault() { throw new Error('Valid quotation should submit'); }});
+assert.equal(quoteElements['#solution-new'].value, 'Home Backup', 'New solution choices retain a compatible backend category');
+assert.match(quoteElements['#additional-new'].value, /Sunwoda battery energy storage/, 'Component preference is included in the submitted message');
+assert.match(quoteElements['#additional-new'].value, /Home Storage/, 'The selected package reaches the submitted message');
+componentInputs[2].checked = true;
+componentInputs[2].listeners.change();
+assert.equal(componentInputs[1].checked, false, 'No preference clears named components');
+componentInputs[0].checked = true;
+componentInputs[0].listeners.change();
+assert.equal(componentInputs[2].checked, false, 'A named component clears no preference');
+evInputs[2].listeners.change();
+assert.equal(quoteElements['#ev-model-field'].hidden, true, 'No EV hides the model question');
+assert.equal(quoteElements['#ev-model'].disabled, true, 'A hidden EV model is excluded from submission');
 
 console.log("All Yagi selector and quotation validation checks passed.");
