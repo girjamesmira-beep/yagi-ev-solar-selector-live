@@ -150,6 +150,9 @@ for (const id of selectors) {
 
 const quotation = fs.readFileSync(new URL("../quotation.html", import.meta.url), "utf8");
 assert.ok(quotation.includes("https://docs.google.com/forms/d/e/1FAIpQLScP64ibl_RW72o1QOQr9q_LKEXH3UpVWrXDtYoL1vCDFNB9_w/formResponse"), "Google Form submission endpoint");
+assert.ok(quotation.includes("SOFAR hybrid inverter and battery system"), "SOFAR preference is available");
+assert.ok(quotation.includes("Sunwoda battery energy storage"), "Sunwoda preference is available");
+assert.ok(quotation.includes("Preferred technology / components:"), "Component preferences are included in the submitted message");
 const requiredEntries = [
   "2134175683", "1897243161", "1076194012", "1102093466",
   "1453989242", "1423461646", "7995339", "638495039",
